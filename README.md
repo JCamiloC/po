@@ -30,6 +30,25 @@ npm run dev
 ```
 Abrir http://localhost:3000
 
+## Deploy en GitHub Pages
+
+Este proyecto está configurado para export estático y Pages.
+
+1. Habilita GitHub Pages en Settings → Pages → Source: GitHub Actions.
+2. Asegúrate que la rama es `main`.
+3. El workflow `.github/workflows/deploy.yml` hace:
+	- `NEXT_PUBLIC_BASE_PATH=/<repo>` para servir bajo subruta.
+	- `next export` y publica `out/`.
+
+URLs:
+- Producción: https://<tu-usuario>.github.io/<repo>/
+
+Local export:
+```bash
+npm run export
+```
+El sitio queda en `out/`.
+
 ### Scripts
 - dev: modo desarrollo con Turbopack.
 - build: construcción producción.
