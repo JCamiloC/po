@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Portafolio Next.js (WIP)
 
-## Getting Started
+Proyecto de portafolio moderno construido con Next.js (App Router), TypeScript, Tailwind CSS, Framer Motion y Three.js.
 
-First, run the development server:
+### Secciones Planificadas
+1. Hero interactivo con partículas y navbar fijo.
+2. Tecnologías con globo 3D (placeholder básico ya incluido).
+3. Proyectos con doble slider (externo infinito + interno fade de imágenes).
+4. Testimonios en loop horizontal.
+5. Contacto con enlaces a redes y acciones (GitHub, LinkedIn, Email, Teléfono).
 
+### Estado Actual
+- Estructura inicial creada.
+- Componentes placeholder de todas las secciones listos.
+- Animaciones básicas y canvas de partículas implementado.
+- Faltan: datos reales, optimizar accesibilidad, dark mode toggle, mejoras visuales del globo, SEO.
+ - Nota: Todos los textos, imágenes (placeholder.svg) y rutas de perfil son temporales y deben reemplazarse con contenido real.
+
+### Requisitos Previos
+- Node.js 18+ recomendado.
+
+### Instalación
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Desarrollo
+```bash
+npm run dev
+```
+Abrir http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Scripts
+- dev: modo desarrollo con Turbopack.
+- build: construcción producción.
+- start: iniciar servidor producción.
+- lint: ejecutar ESLint.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Estructura Principal
+```
+src/
+	app/          # App Router
+	components/
+		sections/   # Secciones del landing
+		visuals/    # Componentes gráficos (Three.js, canvas)
+	types/        # Tipos compartidos
+```
 
-## Learn More
+### Próximos Pasos Sugeridos
+- Añadir tema oscuro/claro toggle.
+- Integrar datos dinámicos (ej. cargar proyectos desde archivo JSON o CMS ligero).
+- Pulir el globo 3D (logos como sprites orbitando).
+- Implementar testing ligero (Playwright / Jest + React Testing Library).
+ - Añadir meta tags personalizadas y Open Graph.
+ - Lazy load avanzado para Three.js y reducción de bundle.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Licencia
+Uso personal. Sustituir assets de placeholder por contenido propio.
