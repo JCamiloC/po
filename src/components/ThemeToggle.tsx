@@ -5,14 +5,16 @@ import { motion } from "framer-motion";
 // Toggle de tema persistente usando localStorage y clase 'dark' en <html>
 export const ThemeToggle: React.FC = () => {
   const [mounted, setMounted] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "light";
+    const stored = window.localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return (stored as "light" | "dark") || (prefersDark ? "dark" : "light");
+  });
 
   useEffect(() => {
     setMounted(true);
-    const stored = window.localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initial = (stored as "light" | "dark") || (prefersDark ? "dark" : "light");
-    applyTheme(initial);
+    applyTheme(theme);
   }, []);
 
   const applyTheme = (t: "light" | "dark") => {

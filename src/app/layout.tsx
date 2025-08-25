@@ -39,7 +39,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}> 
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {/* No-flash theme logic: aplica 'dark' antes de hidratar */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(() => {
+  try {
+    const s = localStorage.getItem('theme');
+    const d = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const t = s || (d ? 'dark' : 'light');
+    if (t === 'dark') document.documentElement.classList.add('dark');
+  } catch {}
+})();`,
+          }}
+        />
         <Navbar />
         {children}
       </body>

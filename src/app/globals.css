@@ -3,15 +3,22 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  color-scheme: light;
 }
 
-/* Variables utilitarias (se usaban en @theme, ahora simplificadas) */
-/* Puedes mapearlas a clases Tailwind personalizadas si extiendes la config */
+/* Modo oscuro por clase .dark en <html> */
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  color-scheme: dark;
+}
 
+/* Mantén soporte por media query como fallback si el usuario no usa el toggle */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.dark) {
     --background: #0a0a0a;
     --foreground: #ededed;
+    color-scheme: dark;
   }
 }
 
@@ -26,10 +33,6 @@ body {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-@keyframes marquee_reverse {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
-}
 
 /* Ajustes utilitarios para scroll suave */
 html { scroll-behavior: smooth; }
@@ -37,12 +40,7 @@ html { scroll-behavior: smooth; }
 /* Mejoras visuales generales */
 .text-balance { text-wrap: balance; }
 
-
-/* Animación marquee para sliders infinitos */
-@keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
+/* Variante */
 @keyframes marquee_var { /* fallback variable version si se usa var(--duration) */
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -51,3 +49,47 @@ html { scroll-behavior: smooth; }
 /* Utilidad opcional: ocultar scrollbars horizontales si se usan wrappers */
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* === Fancy text effects for Hero name === */
+.shimmer-text {
+  background-image: linear-gradient(90deg,
+    var(--foreground) 0%,
+    #60a5fa 25%,
+    #a78bfa 50%,
+    var(--foreground) 75%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+.glow-pulse {
+  /* Using drop-shadow so it works with transparent text */
+  filter: drop-shadow(0 0 0.1rem rgba(96,165,250,0.35))
+          drop-shadow(0 0 0.25rem rgba(167,139,250,0.25));
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  0% {
+    filter: drop-shadow(0 0 0.1rem rgba(96,165,250,0.35))
+            drop-shadow(0 0 0.25rem rgba(167,139,250,0.25));
+  }
+  100% {
+    filter: drop-shadow(0 0 0.35rem rgba(96,165,250,0.7))
+            drop-shadow(0 0 0.65rem rgba(167,139,250,0.5));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-text { animation-duration: 20s; }
+  .glow-pulse { animation: none; }
+}

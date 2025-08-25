@@ -1,10 +1,21 @@
 "use client";
-import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
 // Sección Hero con partículas reactivas al cursor (placeholder simple canvas + efecto)
 export const HeroSection: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const phrases = [
+    "Full Stack Developer",
+    "Especialista en soluciones cloud",
+    "Integraciones API & Automatización",
+    "Web Apps rápidas y escalables",
+  ];
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setIdx((i) => (i + 1) % phrases.length), 2400);
+    return () => clearInterval(id);
+  }, [phrases.length]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -78,15 +89,38 @@ export const HeroSection: React.FC = () => {
           transition={{ duration: 0.9, ease: "easeOut" }}
           className="text-4xl sm:text-6xl font-bold tracking-tight"
         >
-          Hola, soy <span className="text-blue-600 dark:text-blue-400">[Tu Nombre]</span>
+          Hola, soy{" "}
+          <span
+            className="relative shimmer-text glow-pulse"
+            style={{ textUnderlineOffset: "10px" }}
+          >
+            Juan Chaparro
+          </span>
         </motion.h1>
+        {/* Subtítulo dinámico con Framer Motion */}
+        <div className="mt-3 h-8 sm:h-9 overflow-hidden" aria-live="polite">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={idx}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="inline-block text-lg sm:text-xl font-medium text-blue-600 dark:text-blue-400"
+            >
+              {phrases[idx]}
+            </motion.span>
+          </AnimatePresence>
+        </div>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, delay: 0.2, ease: "easeOut" }}
           className="mt-6 text-lg text-balance text-black/70 dark:text-white/70"
         >
-          Breve descripción sobre ti (placeholder). Añade aquí tu rol principal, enfoque y propuesta de valor.
+          Desarrollo digital que impulsa tu negocio.
+          <br className="hidden sm:block" />
+          Soy Full Stack Developer especializado en construir soluciones innovadoras con tecnologías modernas, IA y entornos cloud.
         </motion.p>
         <motion.div
           initial={{ opacity: 0 }}
