@@ -3,6 +3,7 @@ import { useRef, useEffect } from "react";
 import * as THREE from "three";
 import { TECHNOLOGIES } from "@/lib/technologies";
 import { LOGO_PATHS } from "@/lib/logoPaths";
+import { asset } from "@/lib/asset";
 
 // Globo 3D interactivo con arrastre del mouse y logos simplificados como sprites de texto.
 const TechGlobe: React.FC = () => {
@@ -59,7 +60,8 @@ const TechGlobe: React.FC = () => {
 
     TECHNOLOGIES.forEach((t, idx) => {
       let tex: THREE.Texture;
-      const iconPath = LOGO_PATHS[t.id] || t.icon;
+  const iconPathRaw = LOGO_PATHS[t.id] || t.icon;
+  const iconPath = iconPathRaw ? asset(iconPathRaw) : undefined;
       if (iconPath) {
         tex = loader.load(iconPath);
       } else {
