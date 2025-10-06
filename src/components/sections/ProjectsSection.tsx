@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { PROJECTS } from "@/lib/data"; // p1 eliminado; lista inicia en p2 a p6
+import { asset } from "@/lib/asset";
 import { useLanguage } from "@/lib/i18n";
 import Highlight from "@/components/ui/Highlight";
 import ScrollReveal from "@/components/animations/ScrollReveal";
@@ -202,7 +203,7 @@ const Card: React.FC<{
       >
         {/* Front */}
         <div className="absolute inset-0 rounded-xl overflow-hidden border border-black/10 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur [backface-visibility:hidden] levitate flex flex-col">
-            <CoverSlider images={images} className="flex-shrink-0" fitMode="contain" />
+            <CoverSlider images={images.map(img => ({ ...img, src: asset(img.src) }))} className="flex-shrink-0" fitMode="contain" />
             <div className="p-4">
               <h3 className="font-semibold text-lg line-clamp-1">{title}</h3>
             </div>
@@ -219,7 +220,7 @@ const Card: React.FC<{
                 ))}
               </ul>
               <div className="mt-auto pt-4">
-                <button onClick={() => onOpen(images, title)} className="btn-glass w-full">{t('project_view_demo')}</button>
+                <button onClick={() => onOpen(images.map(i => ({ ...i, src: asset(i.src) })), title)} className="btn-glass w-full">{t('project_view_demo')}</button>
               </div>
             </div>
           </div>
@@ -235,7 +236,7 @@ export const ProjectsSection: React.FC = () => {
   const { t } = useLanguage();
 
   const openModal = (images: { id: string; src: string; alt: string }[], title: string) => {
-    setModalImages(images.length ? images : [{ id: "ph", src: "/placeholder.svg", alt: title }]);
+    setModalImages(images.length ? images.map(i => ({ ...i, src: asset(i.src) })) : [{ id: "ph", src: "/placeholder.svg", alt: title }]);
     setModalTitle(title);
     setModalOpen(true);
   };

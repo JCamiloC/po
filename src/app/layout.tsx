@@ -3,10 +3,10 @@ import { Geist, Geist_Mono, Space_Grotesk, Manrope } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import I18nInnerCTA from "@/components/I18nInnerCTA";
 import ScrollProgress from "@/components/animations/ScrollProgress";
 import ParticleBackground from "@/components/visuals/ParticleBackground";
 import { I18nProvider } from "@/lib/i18n";
+import CTASticky from '@/components/CTASticky';
 // Se reemplaza la fuente base por Manrope (moderna y legible). Se elimina el toggle temporal.
 
 const geistSans = Geist({
@@ -78,8 +78,8 @@ export default function RootLayout({
         <Navbar />
         <ScrollProgress />
         {children}
-  {/* CTA flotante traducida */}
-  <I18nInnerCTA />
+          {/* CTA flotante traducida */}
+          <CTASticky />
         {/* Enfocar la sección destino al navegar por hash (#id) para accesibilidad */}
         <Script id="hash-focus" strategy="afterInteractive">
           {`(() => {

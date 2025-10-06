@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useMemo } from "react";
 import { useLanguage } from "@/lib/i18n";
 import Highlight from "@/components/ui/Highlight";
 import Image from "next/image";
+import { asset } from "@/lib/asset";
 // Parallax images removed for performance
 
 // Sección Hero sin canvas propio: fondo de partículas es global en el layout
@@ -106,7 +107,7 @@ export const HeroSection: React.FC = () => {
         >
           <div className="hero-avatar-glow" />
           <Image
-            src="/profile/ghibli.png"
+            src={asset('/profile/ghibli.png')}
             alt="Ilustración estilo Ghibli de Juan Chaparro"
             width={640}
             height={900}
