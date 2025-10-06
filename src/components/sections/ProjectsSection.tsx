@@ -126,37 +126,52 @@ const CoverSlider: React.FC<{
         </motion.div>
       </AnimatePresence>
       {images.length > 1 && showControls && (
-        <>
-          <button
-            type="button"
-            aria-label="Anterior"
-            data-slider-control
-            onClick={(e) => { e.stopPropagation(); go(-1); }}
-            onPointerDown={(e) => e.stopPropagation()}
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full backdrop-blur bg-black/45 hover:bg-black/70 text-white text-sm flex items-center justify-center transition"
-          >&lt;</button>
-          <button
-            type="button"
-            aria-label="Siguiente"
-            data-slider-control
-            onClick={(e) => { e.stopPropagation(); go(1); }}
-            onPointerDown={(e) => e.stopPropagation()}
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full backdrop-blur bg-black/45 hover:bg-black/70 text-white text-sm flex items-center justify-center transition"
-          >&gt;</button>
-        </>
+        <SliderControls go={go} />
       )}
       {images.length > 1 && showDots && (
-        <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 z-10">
-          {images.map((img, i) => (
-            <button
-              key={img.id || i}
-              aria-label={`Ir a imagen ${i + 1}`}
-              onClick={() => { setIndex(i); setPaused(true); setTimeout(()=>setPaused(false), 800); }}
-              className={`h-2.5 w-2.5 rounded-full transition ${i === index ? 'bg-blue-500 shadow-[0_0_0_4px_rgba(59,130,246,0.25)]' : 'bg-white/60 dark:bg-white/30 hover:bg-white/80'}`}
-            />
-          ))}
-        </div>
+        <Dots images={images} index={index} setIndex={(i:number)=>{ setIndex(i); setPaused(true); setTimeout(()=>setPaused(false),800); }} />
       )}
+    </div>
+  );
+};
+
+// Extracted to access translation context cleanly
+const SliderControls: React.FC<{ go: (dir:number)=>void }> = ({ go }) => {
+  const { t } = useLanguage();
+  return (
+    <>
+      <button
+        type="button"
+        aria-label={t('slider_prev')}
+        data-slider-control
+        onClick={(e) => { e.stopPropagation(); go(-1); }}
+        onPointerDown={(e) => e.stopPropagation()}
+        className="absolute left-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full backdrop-blur bg-black/45 hover:bg-black/70 text-white text-sm flex items-center justify-center transition"
+      >&lt;</button>
+      <button
+        type="button"
+        aria-label={t('slider_next')}
+        data-slider-control
+        onClick={(e) => { e.stopPropagation(); go(1); }}
+        onPointerDown={(e) => e.stopPropagation()}
+        className="absolute right-2 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full backdrop-blur bg-black/45 hover:bg-black/70 text-white text-sm flex items-center justify-center transition"
+      >&gt;</button>
+    </>
+  );
+};
+
+const Dots: React.FC<{ images:{id:string;src:string;alt:string}[]; index:number; setIndex:(i:number)=>void }> = ({ images, index, setIndex }) => {
+  const { t } = useLanguage();
+  return (
+    <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 z-10">
+      {images.map((img, i) => (
+        <button
+          key={img.id || i}
+          aria-label={`${t('slider_go_to_image')} ${i + 1}`}
+          onClick={() => setIndex(i)}
+          className={`h-2.5 w-2.5 rounded-full transition ${i === index ? 'bg-blue-500 shadow-[0_0_0_4px_rgba(59,130,246,0.25)]' : 'bg-white/60 dark:bg-white/30 hover:bg-white/80'}`}
+        />
+      ))}
     </div>
   );
 };

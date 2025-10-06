@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Space_Grotesk, Manrope } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import I18nInnerCTA from "@/components/I18nInnerCTA";
 import ScrollProgress from "@/components/animations/ScrollProgress";
 import ParticleBackground from "@/components/visuals/ParticleBackground";
 import { I18nProvider } from "@/lib/i18n";
@@ -77,10 +78,8 @@ export default function RootLayout({
         <Navbar />
         <ScrollProgress />
         {children}
-        {/* CTA flotante */}
-        <a href="#contact" className="cta-sticky btn-glass" aria-label="Hablemos">
-          Hablemos
-        </a>
+  {/* CTA flotante traducida */}
+  <I18nInnerCTA />
         {/* Enfocar la sección destino al navegar por hash (#id) para accesibilidad */}
         <Script id="hash-focus" strategy="afterInteractive">
           {`(() => {

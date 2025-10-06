@@ -12,17 +12,22 @@ export const ThemeToggle: React.FC = () => {
     return (stored as "light" | "dark") || (prefersDark ? "dark" : "light");
   });
 
+  // Mount: apply initial theme once
   useEffect(() => {
     setMounted(true);
     applyTheme(theme);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- we only want initial run
   }, []);
 
-  const applyTheme = (t: "light" | "dark") => {
-    setTheme(t);
+  // When theme changes via button, apply side effects
+  useEffect(() => {
+    if (!mounted) return;
     const root = document.documentElement;
-    if (t === "dark") root.classList.add("dark"); else root.classList.remove("dark");
-    window.localStorage.setItem("theme", t);
-  };
+    if (theme === "dark") root.classList.add("dark"); else root.classList.remove("dark");
+    window.localStorage.setItem("theme", theme);
+  }, [theme, mounted]);
+
+  const applyTheme = (t: "light" | "dark") => setTheme(t);
 
   if (!mounted) return null;
   const isDark = theme === "dark";

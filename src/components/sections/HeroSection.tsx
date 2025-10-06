@@ -8,7 +8,7 @@ import Image from "next/image";
 
 // Sección Hero sin canvas propio: fondo de partículas es global en el layout
 export const HeroSection: React.FC = () => {
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   const phrases = useMemo(() => [
     t('hero_sub_1'),
     t('hero_sub_2'),
