@@ -29,3 +29,5 @@ export interface Testimonial {
   content: string;
   avatar?: string; // ruta a imagen
 }
+
+// (parallax eliminado)

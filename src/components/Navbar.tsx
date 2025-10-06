@@ -3,11 +3,14 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import clsx from "clsx";
 import ThemeToggle from "./ThemeToggle";
+import LanguageToggle from "./LanguageToggle";
+import { useLanguage } from "@/lib/i18n";
 
 // Navbar fijo superior
 export const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -27,7 +30,7 @@ export const Navbar: React.FC = () => {
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 flex h-14 items-center justify-between">
         <Link href="#" className="font-semibold tracking-tight text-lg">
-          JC / Portafolio
+          JC
         </Link>
         {/* Botón hamburguesa (mobile) */}
         <button
@@ -53,11 +56,11 @@ export const Navbar: React.FC = () => {
           )}
         >
           {[
-            { id: "hero", label: "Inicio" },
-            { id: "tech", label: "Tecnologías" },
-            { id: "projects", label: "Proyectos" },
-            { id: "testimonials", label: "Testimonios" },
-            { id: "contact", label: "Contacto" },
+            { id: "hero", label: t('nav_home') },
+            { id: "tech", label: t('nav_tech') },
+            { id: "projects", label: t('nav_projects') },
+            { id: "testimonials", label: t('nav_testimonials') },
+            { id: "contact", label: t('nav_contact') },
           ].map((item) => (
             <li key={item.id}>
               <a
@@ -69,7 +72,10 @@ export const Navbar: React.FC = () => {
             </li>
           ))}
           <li>
-            <ThemeToggle />
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
+              <ThemeToggle />
+            </div>
           </li>
         </ul>
 
@@ -78,11 +84,11 @@ export const Navbar: React.FC = () => {
           <div className="absolute top-14 left-0 right-0 md:hidden border-b border-black/10 dark:border-white/10 bg-white/90 dark:bg-black/70 backdrop-blur">
             <ul className="px-4 py-3 grid gap-3 text-sm">
               {[
-                { id: "hero", label: "Inicio" },
-                { id: "tech", label: "Tecnologías" },
-                { id: "projects", label: "Proyectos" },
-                { id: "testimonials", label: "Testimonios" },
-                { id: "contact", label: "Contacto" },
+                { id: "hero", label: t('nav_home') },
+                { id: "tech", label: t('nav_tech') },
+                { id: "projects", label: t('nav_projects') },
+                { id: "testimonials", label: t('nav_testimonials') },
+                { id: "contact", label: t('nav_contact') },
               ].map((item) => (
                 <li key={item.id}>
                   <a
@@ -95,7 +101,10 @@ export const Navbar: React.FC = () => {
                 </li>
               ))}
               <li className="pt-2 border-t border-black/10 dark:border-white/10">
-                <ThemeToggle />
+                <div className="flex items-center gap-2">
+                  <LanguageToggle />
+                  <ThemeToggle />
+                </div>
               </li>
             </ul>
           </div>

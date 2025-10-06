@@ -32,28 +32,28 @@ Abrir http://localhost:3000
 
 ## Deploy en GitHub Pages
 
-Este proyecto está configurado para export estático y Pages.
+Este proyecto está configurado para export estático (Next 15 `output: "export"`). En este modo, `npm run build` genera la carpeta `out/` lista para Pages.
 
 1. Habilita GitHub Pages en Settings → Pages → Source: GitHub Actions.
 2. Asegúrate que la rama es `main`.
-3. El workflow `.github/workflows/deploy.yml` hace:
-	- `NEXT_PUBLIC_BASE_PATH=/<repo>` para servir bajo subruta.
-	- `next export` y publica `out/`.
+3. El workflow `.github/workflows/deploy.yml` debe:
+	- Definir `NEXT_PUBLIC_BASE_PATH=/<repo>` si publicas bajo subruta.
+	- Ejecutar `npm ci && npm run build`.
+	- Publicar la carpeta `out/`.
 
 URLs:
 - Producción: https://<tu-usuario>.github.io/<repo>/
 
-Local export:
+Build local (genera `out/`):
 ```bash
-npm run export
+npm run build
 ```
-El sitio queda en `out/`.
 
 ### Scripts
-- dev: modo desarrollo con Turbopack.
-- build: construcción producción.
-- start: iniciar servidor producción.
-- lint: ejecutar ESLint.
+- `dev`: modo desarrollo con Turbopack.
+- `build`: construcción de producción (genera export estático en `out/`).
+- `start`: iniciar servidor de producción (no aplicable al export estático).
+- `lint`: ejecutar `next lint`.
 
 ### Estructura Principal
 ```
@@ -66,12 +66,23 @@ src/
 ```
 
 ### Próximos Pasos Sugeridos
-- Añadir tema oscuro/claro toggle.
-- Integrar datos dinámicos (ej. cargar proyectos desde archivo JSON o CMS ligero).
-- Pulir el globo 3D (logos como sprites orbitando).
-- Implementar testing ligero (Playwright / Jest + React Testing Library).
- - Añadir meta tags personalizadas y Open Graph.
- - Lazy load avanzado para Three.js y reducción de bundle.
+- Integrar datos reales (proyectos/testimonios) y `og:image`.
+- Pulir el globo 3D (sprites con texturas optimizadas y cleanup completo).
+- Testing ligero (Playwright / Jest + React Testing Library).
+- Lazy load/pausa bajo `prefers-reduced-motion` en animaciones largas.
+
+  lib/logoPaths.ts  # Mapeo central de rutas a logos SVG
+### Accesibilidad
+- `lang="es"`, skip-link “Saltar al contenido”, foco al destino `#hash` y canvas decorativos con `aria-hidden`.
+  placeholder.svg # Imagen genérica para los sliders/proyectos
+
+### Logos del globo (cómo reemplazarlos)
+- Edita `src/lib/logoPaths.ts` y cambia las rutas a tus SVG oficiales por id de tecnología.
+- Ejemplo: `LOGO_PATHS['next'] = '/logos/next-official.svg'`.
+- Si dejas `undefined`, el globo usa el fallback (círculo + texto).
+
+### 404 de placeholder
+Si ves en consola `GET /placeholder.svg 404`, es porque algún proyecto/testimonial usa la ruta por defecto; ya se agregó `public/placeholder.svg`. Reemplázalo en `src/lib/data.ts` con tus imágenes reales cuando las tengas.
 
 ### Licencia
 Uso personal. Sustituir assets de placeholder por contenido propio.

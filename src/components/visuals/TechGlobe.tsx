@@ -2,6 +2,7 @@
 import { useRef, useEffect } from "react";
 import * as THREE from "three";
 import { TECHNOLOGIES } from "@/lib/technologies";
+import { LOGO_PATHS } from "@/lib/logoPaths";
 
 // Globo 3D interactivo con arrastre del mouse y logos simplificados como sprites de texto.
 const TechGlobe: React.FC = () => {
@@ -21,18 +22,29 @@ const TechGlobe: React.FC = () => {
     el.innerHTML = ""; // limpia si se remonta
     el.appendChild(renderer.domElement);
 
-    // Esfera base
+    // Esfera base con wireframe sutil
     const sphereGeo = new THREE.SphereGeometry(3, 48, 48);
-    const sphereMat = new THREE.MeshStandardMaterial({
-      color: new THREE.Color("#1e293b"),
-      roughness: 0.8,
-      metalness: 0.1,
+    const sphereMat = new THREE.MeshBasicMaterial({
+      color: new THREE.Color("#334155"), // slate-700
       transparent: true,
-      opacity: 0.25,
+      opacity: 0.18,
       wireframe: true,
     });
     const sphere = new THREE.Mesh(sphereGeo, sphereMat);
     scene.add(sphere);
+
+    // Esfera glow: ligera ampliación y blending aditivo para halo suave
+    const glowGeo = new THREE.SphereGeometry(3.01, 48, 48);
+    const glowMat = new THREE.MeshBasicMaterial({
+      color: new THREE.Color("#60a5fa"), // blue-400
+      transparent: true,
+      opacity: 0.08,
+      wireframe: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const glowSphere = new THREE.Mesh(glowGeo, glowMat);
+    scene.add(glowSphere);
 
     const light = new THREE.DirectionalLight(0xffffff, 1.1);
     light.position.set(5, 5, 5);
@@ -42,23 +54,33 @@ const TechGlobe: React.FC = () => {
     // Crear sprites para tecnologías distribuidas en la esfera
     const group = new THREE.Group();
     const radius = 3.2;
+    const loader = new THREE.TextureLoader();
+    const textures: THREE.Texture[] = [];
+
     TECHNOLOGIES.forEach((t, idx) => {
-      const canvas = document.createElement("canvas");
-      const size = 256;
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext("2d")!;
-      ctx.fillStyle = t.color;
-      ctx.beginPath();
-      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#fff";
-      ctx.font = "bold 90px sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(t.label, size / 2, size / 2 + 8);
-      const tex = new THREE.CanvasTexture(canvas);
+      let tex: THREE.Texture;
+      const iconPath = LOGO_PATHS[t.id] || t.icon;
+      if (iconPath) {
+        tex = loader.load(iconPath);
+      } else {
+        const canvas = document.createElement("canvas");
+        const size = 256;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d")!;
+        ctx.fillStyle = t.color;
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 90px sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(t.label, size / 2, size / 2 + 8);
+        tex = new THREE.CanvasTexture(canvas);
+      }
       tex.colorSpace = THREE.SRGBColorSpace;
+      textures.push(tex);
       const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
       const sprite = new THREE.Sprite(mat);
       const phi = Math.acos(-1 + (2 * (idx + 0.5)) / TECHNOLOGIES.length);
@@ -74,12 +96,13 @@ const TechGlobe: React.FC = () => {
     });
     scene.add(group);
 
-    // Interacción de arrastre
-    let isDown = false;
-    let lastX = 0;
-    let lastY = 0;
-    let targetRotX = 0;
-    let targetRotY = 0;
+  // Interacción de arrastre + autorrotación con inercia
+  let isDown = false;
+  let lastX = 0;
+  let lastY = 0;
+  let velX = 0; // velocidad angular por input
+  let velY = 0;
+  const baseSpeedY = 0.003; // autorrotación suave
 
     const onDown = (e: PointerEvent) => {
       isDown = true;
@@ -92,8 +115,8 @@ const TechGlobe: React.FC = () => {
       const dy = e.clientY - lastY;
       lastX = e.clientX;
       lastY = e.clientY;
-      targetRotY += dx * 0.005;
-      targetRotX += dy * 0.005;
+      velY += dx * 0.0025; // sensibilidad horizontal
+      velX += dy * 0.0025; // sensibilidad vertical
     };
     const onUp = () => { isDown = false; };
     renderer.domElement.addEventListener("pointerdown", onDown);
@@ -110,17 +133,39 @@ const TechGlobe: React.FC = () => {
     };
     window.addEventListener("resize", resize);
 
-    const animate = () => {
-      // Lerp para suavizar
-      group.rotation.y += (targetRotY - group.rotation.y) * 0.07;
-      group.rotation.x += (targetRotX - group.rotation.x) * 0.07;
-      sphere.rotation.y += 0.002; // rotación lenta base
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let rafId = 0;
+    const tick = () => {
+      // Pausar animación si reduce motion o pestaña oculta
+      if (media.matches || document.hidden) {
+        renderer.render(scene, camera);
+        rafId = requestAnimationFrame(tick);
+        return;
+      }
+      // Autorrotación + inercia con amortiguación
+      group.rotation.y += baseSpeedY + velY;
+      group.rotation.x += velX;
+      // Limitar inclinación X para evitar voltear en exceso
+      const maxTilt = Math.PI / 3;
+      group.rotation.x = Math.max(-maxTilt, Math.min(maxTilt, group.rotation.x));
+      // Amortiguar velocidades
+      velX *= 0.92;
+      velY *= 0.92;
+      const t = performance.now() * 0.001;
+      // Sincronizar esfera y halo con el grupo para que todo parezca un conjunto
+      sphere.rotation.y = group.rotation.y * 1.0;
+      sphere.rotation.x = group.rotation.x * 1.0;
+      glowSphere.rotation.y = group.rotation.y * 1.0;
+      glowSphere.rotation.x = group.rotation.x * 1.0;
+      // Pequeña variación de opacidad para efecto de brillo
+      glowMat.opacity = 0.06 + Math.abs(Math.sin(t * 0.6)) * 0.04;
       renderer.render(scene, camera);
-      requestAnimationFrame(animate);
+      rafId = requestAnimationFrame(tick);
     };
-    animate();
+    rafId = requestAnimationFrame(tick);
 
     return () => {
+      cancelAnimationFrame(rafId);
       renderer.domElement.removeEventListener("pointerdown", onDown);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
@@ -128,6 +173,17 @@ const TechGlobe: React.FC = () => {
       renderer.dispose();
       sphereGeo.dispose();
       sphereMat.dispose();
+      glowGeo.dispose();
+      glowMat.dispose();
+      // Liberar recursos de sprites
+      group.children.forEach((child) => {
+        const sprite = child as THREE.Sprite;
+        const mat = sprite.material as THREE.SpriteMaterial;
+        if (mat.map) mat.map.dispose();
+        mat.dispose();
+      });
+      group.clear();
+      textures.forEach((t) => t.dispose());
     };
   }, []);
 
